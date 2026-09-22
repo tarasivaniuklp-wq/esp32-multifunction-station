@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Multimodal_WiFi_station",
+			"path": ".."
+		},
+		{
+			"name": "OLED_ESP32",
+			"path": "../../OLED_ESP32"
+		}
+	],
+	"settings": {}
+}

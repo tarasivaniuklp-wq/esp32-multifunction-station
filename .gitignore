@@ -1,0 +1,16 @@
+# PlatformIO & Build artifacts
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+sdkconfig
+
+# IDEs & OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.DS_Store
+*.swp
+
+# Configs with potential secrets
+include/credentials.h
