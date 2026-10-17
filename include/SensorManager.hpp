@@ -5,23 +5,27 @@
 
 #include "Types.hpp"
 #include "driver/gpio.h"
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#define DHT_PIN GPIO_NUM_23
-#define PIR_PIN GPIO_NUM_27
+#define DHT_PIN GPIO_NUM_19
+#define PIR_PIN GPIO_NUM_18
 // Вписати справжні піни
 
 class SensorManager {
 private:
     QueueHandle_t telemetry_queue;
     QueueHandle_t display_data_queue;
+    QueueHandle_t telegram_queue;
     float last_temp = 0;
     float last_hum = 0;
+    float critical_temp = 40;
     void dht_pin_init();
     void pir_pin_init();
     bool wait_for_level(int target_level, uint32_t timeout);
     bool read_info_DHT11(float* humidity, float* temperature);
     bool read_info_PIR();
+    void set_critical_temp(float temp);
     void run();
     static void TaskWrapper(void* param);
 
@@ -30,5 +34,5 @@ public:
     bool read_info();
     void buzzer_on();
     void buzzer_off();
-    SensorManager(QueueHandle_t telemetry_queue_, QueueHandle_t display_data_queue_);
+    SensorManager(QueueHandle_t telemetry_queue_, QueueHandle_t display_data_queue_, QueueHandle_t telegram_queue_);
 };

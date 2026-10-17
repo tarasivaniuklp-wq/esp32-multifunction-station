@@ -13,10 +13,17 @@ idf_component_register(
         "NetworkManager.cpp"
         "SensorManager.cpp"
         "AlarmControler.cpp"
+        "TelegramBot.cpp"
+        "TimeManager.cpp"
+        "html_embeded.S"
     INCLUDE_DIRS 
         "."
-    REQUIRES 
+    PRIV_REQUIRES 
+        espressif__cjson 
+        nvs_flash 
         driver 
         freertos 
         log
+        esp_http_client  
+        esp_wifi
 )

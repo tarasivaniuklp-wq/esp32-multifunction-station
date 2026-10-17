@@ -32,9 +32,6 @@ void MenuPage::draw(OLED_display& display) {
     draw_home_icon(display, 3, 2);
     display.draw_str(15, 2, "Home", 1);
     display.draw_line(78, 0, 78, 11, 1);
-
-    display.draw_str(84, 2, "14:02", true);
-
     display.draw_line(0, 11, 127, 11, 1);
 
     const int16_t item_height = 13;
@@ -107,8 +104,6 @@ void TelemetryPage::draw(OLED_display& display) {
     draw_thermometer_icon(display, 3, 2);
     display.draw_line(78, 0, 78, 11, 1);
     display.draw_str(15, 2, "Temp&Hum", 1);
-    display.draw_str(84, 2, "14:02", true);
-
     display.draw_line(0, 11, 127, 11, 1);
 
     snprintf((char*)temp, sizeof(temp), "Temp: %.1f", data.temp);
@@ -150,10 +145,11 @@ AlarmState AlarmPage::get_state() { return m_state; }
 void AlarmPage::set_contoler(AlarmControler* alarm_cntr_) { alarm_cntr = alarm_cntr_; }
 void AlarmPage::draw(OLED_display& display) {
     m_state = alarm_cntr->get_state();
+    m_timer_sec = alarm_cntr->get_timer();  // Отримуємо живий таймер з контролера
+
     draw_siren_icon(display, 3, 1);
     display.draw_line(78, 0, 78, 11, 1);
     display.draw_str(15, 2, "Alarm", 1);
-    display.draw_str(84, 2, "14:02", true);
     display.draw_line(0, 11, 127, 11, 1);
 
     display.draw_str(5, 14, "STATE:", 1);
@@ -161,14 +157,17 @@ void AlarmPage::draw(OLED_display& display) {
     const char* state_str = "DISARMED";
     switch (m_state) {
         case AlarmState::ARMED:
-            state_str = "ARMING...";
+            if (m_timer_sec > 0) {
+                state_str = "ARMING...";
+            } else {
+                state_str = "ARMED";
+            }
             break;
         case AlarmState::TRIGGERED:
             state_str = "ALARM!";
             break;
         case AlarmState::DISARMED:
             state_str = "DISARMED";
-        default:
             break;
     }
     display.draw_str(20, 24, state_str, 1);
@@ -178,13 +177,22 @@ void AlarmPage::draw(OLED_display& display) {
     display.draw_str(5, 37, "TIME TO LEAVE:", 1);
 
     char timer_buf[8];
-    snprintf(timer_buf, sizeof(timer_buf), "%ds", m_timer_sec);
+    if (m_state == AlarmState::ARMED && m_timer_sec > 0) {
+        snprintf(timer_buf, sizeof(timer_buf), "%ds", m_timer_sec);
+    } else {
+        snprintf(timer_buf, sizeof(timer_buf), "--");
+    }
     display.draw_str(20, 49, timer_buf, 1);
 }
 void AlarmPage::handle_input(UIEvent btn_ev, DisplayManager& display_mng) {
     if (btn_ev.btn_id == ButtonId::BACK) {
         if (alarm_list[0].target_page != nullptr) {
             display_mng.navigate_to(*alarm_list[0].target_page);
+        }
+    } else if (btn_ev.btn_id == ButtonId::SELECT) {
+        if (alarm_cntr != nullptr) {
+            AlarmCmd cmd = (m_state == AlarmState::DISARMED) ? AlarmCmd::ARM : AlarmCmd::DISARM;
+            alarm_cntr->send_command(cmd);
         }
     }
 }
@@ -222,7 +230,6 @@ void GamePage::draw(OLED_display& display) {
     draw_gamepad_icon(display, 3, 2);
     display.draw_str(17, 2, "GAMES", 1);
     display.draw_line(78, 0, 78, 11, 1);
-    display.draw_str(84, 2, "14:02", true);
     display.draw_line(0, 11, 127, 11, 1);
 
     const int16_t item_height = 22;
@@ -302,7 +309,6 @@ void SettingsPage::draw(OLED_display& display) {
     draw_gear_icon(display, 3, 1);
     display.draw_str(15, 2, "SETTINGS", 1);
     display.draw_line(78, 0, 78, 11, 1);
-    display.draw_str(84, 2, "14:02", true);
     display.draw_line(0, 11, 127, 11, 1);
 
     const int16_t item_height = 16;

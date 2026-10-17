@@ -31,10 +31,9 @@ void DisplayManager::begin() {
 
     i2c_master_bus_add_device(i2c_handle, &dev_cfg, &dev_handle);
 
-    xTaskCreate(&DisplayManager::Task_wraper, "DisplayManager", 4096, this, 4, nullptr);
-
     m_display.begin(dev_handle);
     m_display.oled_update();
+    xTaskCreate(&DisplayManager::Task_wraper, "DisplayManager", 4096, this, 4, nullptr);
 }
 void DisplayManager::Task_wraper(void* param) {
     DisplayManager* object = static_cast<DisplayManager*>(param);
@@ -43,37 +42,47 @@ void DisplayManager::Task_wraper(void* param) {
 void DisplayManager::run() {
     UIEvent ui_ev;
     render();
+
     while (true) {
-        if (xQueueReceive(m_telemetry_queue, &data, 100) == true) {
-            ESP_LOGI("DisplayManager", "Data resived successfuly!");
+        bool needs_render = false;
+
+        if (xQueueReceive(m_telemetry_queue, &data, 0)) {
+            ESP_LOGI("DisplayManager", "Data received successfully!");
             telemetry_page.update_data(data);
-        }
-        if (xQueueReceive(m_ui_ev_queue, &ui_ev, 100) == true) {
-            if (ui_ev.type == UIEventType::BUTTON_PRESS) {
-                if (cur_page != nullptr) {
-                    cur_page->handle_input(ui_ev, *this);
-                    render();
-                }
-            } else if (ui_ev.type == UIEventType::FORCE_NAVIGATE) {
-                if (ui_ev.target_page != nullptr) {
-                    navigate_to(*ui_ev.target_page);
-                    render();
-                }
+            if (cur_page == &telemetry_page) {
+                needs_render = true;
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(30));
+
+        if (xQueueReceive(m_ui_ev_queue, &ui_ev, pdMS_TO_TICKS(50))) {
+            if (ui_ev.type == UIEventType::BUTTON_PRESS) {
+                if (cur_page != nullptr) cur_page->handle_input(ui_ev, *this);
+            } else if (ui_ev.type == UIEventType::FORCE_NAVIGATE) {
+                if (ui_ev.target_page != nullptr) navigate_to(*ui_ev.target_page);
+            } else if (ui_ev.type == UIEventType::REFRESH_SCREEN) {
+            }
+
+            needs_render = true;
+        }
+
+        if (needs_render) {
+            render();
+        }
     }
 }
 void DisplayManager::render() {
     if (cur_page != nullptr) {
         m_display.oled_clear_buffer();
         cur_page->draw(m_display);
+        std::string cur_time = TimeManager::get_formated_time("%H:%M");
+        m_display.draw_str(84, 2, cur_time.c_str(), true);
         m_display.oled_update();
     }
 }
 void DisplayManager::navigate_to(IPage& page) { cur_page = &page; }
 DisplayManager::DisplayManager(QueueHandle_t display_data_queue_, QueueHandle_t telemetry_queue)
     : m_ui_ev_queue(display_data_queue_), m_telemetry_queue(telemetry_queue) {
+    cur_page = &menu_page;
     menu_page.set_target_page(1, &telemetry_page);
     menu_page.set_target_page(0, &alarm_page);
     menu_page.set_target_page(2, &game_page);

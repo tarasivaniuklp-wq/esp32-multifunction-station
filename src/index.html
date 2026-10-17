@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Station</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; text-align: center; margin: 0; padding: 20px; }
+        h1 { color: #2c3e50; margin-bottom: 30px; }
+        .menu { display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto; }
+        .btn { padding: 15px 20px; font-size: 18px; font-weight: bold; color: white; background-color: #3498db; text-decoration: none; border-radius: 8px; transition: background 0.3s, transform 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn:hover { background-color: #2980b9; }
+        .btn:active { transform: scale(0.98); }
+        .btn.alarm { background-color: #e74c3c; }
+        .btn.alarm:hover { background-color: #c0392b; }
+        .btn.settings { background-color: #7f8c8d; }
+        .btn.settings:hover { background-color: #636e72; }
+    </style>
+</head>
+<body>
+    <h1>Панель керування ESP32</h1>
+    <div class="menu">
+        <a href="/alarm" class="btn alarm">🚨 Сигналізація</a>
+        <a href="/telemetry" class="btn">🌡 Телеметрія</a>
+        <a href="/settings" class="btn settings">⚙️ Налаштування</a>
+    </div>
+</body>
+</html>

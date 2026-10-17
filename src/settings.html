@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Налаштування - ESP32</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 20px; }
+        .container { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; text-align: left; }
+        .setting-group { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .setting-info h4 { margin: 0 0 5px 0; color: #2c3e50; }
+        .setting-info p { margin: 0; font-size: 13px; color: #7f8c8d; }
+        
+        select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; outline: none; }
+        
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #27ae60; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-save { display: block; width: 100%; margin-top: 10px; padding: 15px; font-size: 16px; font-weight: bold; color: white; background-color: #3498db; border: none; cursor: pointer; border-radius: 8px; transition: 0.3s; box-sizing: border-box; }
+        .btn-save:hover { background-color: #2980b9; }
+        .btn-back { display: block; margin-top: 10px; padding: 15px; font-size: 16px; font-weight: bold; color: white; background-color: #95a5a6; text-decoration: none; border-radius: 8px; text-align: center; transition: 0.3s; }
+        .btn-back:hover { background-color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <h1>⚙️ Налаштування</h1>
+    
+    <!-- ВЕСЬ контент має бути всередині форми -->
+    <form action="/settings/update" method="GET" class="container">
+        
+        <div class="setting-group">
+            <div class="setting-info">
+                <h4>Затримка на вихід</h4>
+                <p>Таймер перед активацією</p>
+            </div>
+            <select name="delay">
+                <option value="5">5 сек</option>
+                <option selected value="10">10 сек</option>
+                <option value="30">30 сек</option>
+            </select>
+        </div>
+
+        <div class="setting-group">
+            <div class="setting-info">
+                <h4>Telegram Bot</h4>
+                <p>Сповіщення про тривогу</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" name="tg_notif" value="1" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-group">
+            <div class="setting-info">
+                <h4>Звукова сирена</h4>
+                <p>Увімкнути активний зумер</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" name="buzzer" value="1" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button type="submit" class="btn-save">💾 Зберегти зміни</button>
+        <a href="/" class="btn-back">⬅ На головну</a>
+    </form>
+</body>
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const params = new URLSearchParams(new FormData(this)).toString();
+        fetch('/settings/update?' + params)
+            .then(res => {
+                if(res.ok) alert('✅ Зміни успішно збережено!');
+            })
+            .catch(err => alert('Помилка з\'єднання!'));
+    });
+</script>
+</html>

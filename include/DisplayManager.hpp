@@ -7,14 +7,16 @@
 #include "Types.hpp"
 #include "esp_log.h"
 
+// static const char* TAG = "[Display Manager]";
+
 class DisplayManager {
 public:
     DisplayManager(QueueHandle_t display_data_queue, QueueHandle_t telemetry_queue);
     void begin();
     IPage* get_cur_page();
+    AlarmPage* get_alarm_page() { return &alarm_page; }
     void set_page();
     void navigate_to(IPage& page);
-    void navigate_back(IPage& page);
 
 private:
     SensorData data;

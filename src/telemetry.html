@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Телеметрія - ESP32</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 20px; }
+        .container { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; border-left: 5px solid #3498db; }
+        .card.warning { border-left: 5px solid #f39c12; background-color: #fffdfa; }
+        .card h3 { margin: 0 0 10px 0; font-size: 18px; color: #2c3e50; }
+        .status { font-size: 24px; font-weight: bold; color: #27ae60; margin: 10px 0; }
+        .error-title { color: #e74c3c; font-weight: bold; margin-bottom: 5px; }
+        .reason { font-size: 14px; color: #7f8c8d; line-height: 1.5; margin: 0; }
+        .btn-back { display: block; margin-top: 20px; padding: 15px; font-size: 16px; font-weight: bold; color: white; background-color: #95a5a6; text-decoration: none; border-radius: 8px; transition: 0.3s; }
+        .btn-back:hover { background-color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <h1>Телеметрія</h1>
+    <div class="container">
+        
+        <!-- Картка PIR-датчика -->
+        <div class="card">
+            <h3>🏃 Датчик руху (PIR)</h3>
+            <p style="margin: 0;">Поточний стан:</p>
+            <div class="status">В нормі (Руху немає)</div>
+        </div>
+
+        <!-- Картка DHT11 з поясненням -->
+        <div class="card warning">
+            <h3>🌡 Клімат (DHT11)</h3>
+            <p class="error-title">⚠️ Датчик тимчасово вимкнено</p>
+            <p class="reason">
+                <b>Причина:</b> Протокол DHT11 базується на програмному вимірюванні мікросекундних імпульсів. 
+                В умовах багатозадачності <b>FreeRTOS</b> та активного Wi-Fi з'єднання, планувальник перериває зчитування, що призводить до втрати даних. <br><br>
+                ⏳ <i>Очікується встановлення апаратного I2C-датчика (AHT10) для стабільної роботи.</i>
+            </p>
+        </div>
+
+        <a href="/" class="btn-back">⬅ Повернутися на головну</a>
+    </div>
+</body>
+</html>

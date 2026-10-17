@@ -35,13 +35,15 @@ InputManager::InputManager(QueueHandle_t BTN_EV_queue) : m_queue_handle(BTN_EV_q
 void InputManager::run() {
     ButtonId last_btn_state;
     last_btn_state = ButtonId::NONE;
+    UIEvent ev;
 
     while (true) {
         ButtonId cur_btn_state = read_buttons();
-
+        ev.btn_id = cur_btn_state;
+        ev.type = UIEventType::BUTTON_PRESS;
         if (cur_btn_state != last_btn_state) {
             if (cur_btn_state != ButtonId::NONE) {
-                xQueueSend(m_queue_handle, &cur_btn_state, 0);
+                xQueueSend(m_queue_handle, &ev, 0);
             }
             last_btn_state = cur_btn_state;
         }

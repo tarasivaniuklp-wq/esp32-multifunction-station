@@ -3,9 +3,10 @@
 
 #include <cstddef>
 #include <cstdint>
-
+#include<string>
 #include "SensorManager.hpp"
 #include "Types.hpp"
+#include "TimeManager.hpp"
 class DisplayManager;
 class OLED_display;
 class AlarmControler;

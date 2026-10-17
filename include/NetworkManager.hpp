@@ -14,6 +14,7 @@
 class NetworkManager {
 private:
     QueueHandle_t alarm_cmd_queue = nullptr;
+    QueueHandle_t m_settings_queue = nullptr;
     AlarmCmd cmd = AlarmCmd::DISARM;
     AlarmState mod = AlarmState::DISARMED;
     void wifi_init();
@@ -23,6 +24,7 @@ private:
     static esp_err_t index_html_handler(httpd_req_t* req);
     static esp_err_t telemetry_page_handler(httpd_req_t* req);
     static esp_err_t settings_page_handler(httpd_req_t* req);
+    static esp_err_t settings_update_handler(httpd_req_t* req);
     void conect_to_server();
     httpd_handle_t server_start();
     httpd_handle_t server = NULL;
@@ -30,5 +32,5 @@ private:
 public:
     void begin();
     AlarmState get_PIR_state();
-    NetworkManager(QueueHandle_t alarm_cmd_queue);
+    NetworkManager(QueueHandle_t alarm_cmd_queue, QueueHandle_t m_settings_queue);
 };

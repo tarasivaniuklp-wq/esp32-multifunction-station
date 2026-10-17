@@ -14,3 +14,7 @@ sdkconfig
 
 # Configs with potential secrets
 include/credentials.h
+
+Multimodal_WiFi_station.code-workspace
+src/j.json
+managed_components/
